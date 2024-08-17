@@ -1,0 +1,141 @@
+#Download youtube video and convert to mp3
+yt2mp3(){
+   yt-dlp --extract-audio --audio-format mp3 $1
+}
+
+yt2mp4(){
+   yt-dlp -f bestvideo+bestaudio $1
+}
+
+function o() {
+	if [ $# -eq 0 ]; then
+		open .;
+	else
+		open "$@";
+	fi;
+}
+
+
+#We use ripgrep for now -> check .aliases
+#findstr(){
+#	grep -rni $pwd -e "$1" 2>/dev/null
+#rg "$1"
+#}
+
+
+#findfile(){
+#	find . -iname "$1" 2>/dev/null
+#}
+
+finddir(){
+	find . -iname "$1" -type d 2>/dev/null
+}
+
+# Determine size of a file or total size of a directory
+fs() {
+	if du -b /dev/null > /dev/null 2>&1; then
+		local arg=-sbh
+	else
+		local arg=-sh
+	fi
+	# shellcheck disable=SC2199
+	if [[ -n "$@" ]]; then
+		du $arg -- "$@"
+	else
+		du $arg -- .[^.]* *
+	fi
+}
+
+dockerbash(){
+sudo docker exec -it $1 /bin/bash
+}
+
+unpack() {
+   if [[ -f $1 ]] ; then
+     case $1 in
+       *.tar.bz2) tar xjf $1  ;;
+       *.tar.gz)  tar xzf $1  ;;
+       *.tbz)     tar xjvf $1   ;;
+       *.bz2)     bunzip2 $1  ;;
+       *.rar)     rar x $1    ;;
+       *.gz)      gunzip $1   ;;
+       *.tar)     tar xf $1   ;;
+       *.tbz2)    tar xjf $1  ;;
+       *.tgz)     tar xzf $1  ;;
+       *.zip)     unzip $1    ;;
+       *.Z)       uncompress $1 ;;
+       *.7z)      7z x $1     ;;
+       *)         echo "'$1' cannot be extracted via extract()" ;;
+     esac
+   else
+     echo "'$1' is not a valid file"
+   fi
+}
+
+pack() {
+  if [[ $1 ]] ; then
+    case $1 in
+      tbz)   tar cjvf $2.tar.bz2 $2   ;;
+      tgz)   tar czvf $2.tar.gz  $2   ;;
+      tar)   tar cpvf $2.tar  $2    ;;
+      bz2)   bzip $2          ;;
+      gz)    gzip -c -9 -n $2 > $2.gz ;;
+      zip)   zip -r $2.zip $2     ;;
+      7z)    7z a $2.7z $2      ;;
+      *)     echo "'$1' cannot be packed via pk()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
+
+installed() {
+
+  #Check if its debian based
+  if [ -x "$(command -v apt)" ]; then
+    echo "Debian Packages:"
+    
+    #List all installed .deb packages
+    apt list --installed
+  fi
+
+  #Check if pacman is installed
+  if [ -x "$(command -v pacman)" ]; then
+    echo "Arch Packages:"
+    #List all installed packages
+    pacman -Q
+  fi
+
+  echo "------------------------------------"
+  echo "Flatpak Packages:"
+  #List all flatpak packages
+  flatpak list
+}
+
+date-global(){
+# use tzselect to find timezone listing
+    local SHOWTIMEZONE="$(
+    alias date='date +"%a %D %k:%M %p"'
+    echo "Current Location:" "$(date)"
+    echo "USA LosAngeles:" "$(TZ='America/Los_Angeles' date)"
+    echo "Canada Alberta:" "$(TZ='America/Edmonton' date)"
+    echo "USA NewYork:" "$(TZ='America/New_York' date)"
+    echo "EU London:" "$(TZ='Europe/London' date)"
+    echo "Bangladesh Dhaka:" "$(TZ='Asia/Dhaka' date)"
+    echo "China Xinjiang:" "$(TZ='Asia/Urumqi' date)"
+    echo "Vietnam Saigon:" "$(TZ='Asia/Ho_Chi_Minh' date)"
+    echo "China Beijing:" "$(TZ='Asia/Shanghai' date)"
+    echo "HK HongKong:" "$(TZ='Asia/Hong_Kong' date)"
+    echo "Japan Tokyo:" "$(TZ='Asia/Tokyo' date)"
+    )"
+    echo "$SHOWTIMEZONE" | column -t
+}
+
+kill-port() {
+  if [[ $1 ]] ; then
+    lsof -i :$1 | grep 'TCP' | awk '{print $2}' | xargs kill -9
+  else
+    echo "'$1' is not a valid port"
+  fi
+}
+

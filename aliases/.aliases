@@ -1,0 +1,44 @@
+#Get WAN ip address
+alias myip="curl ifconfig.me"
+
+#Scan for lan devices in your subnet
+alias landevices="sudo nmap -sP 192.168.8.0/24 | grep  "Nmap scan report for" | awk -F ' '  '{print $5, $6}'"
+
+#LazyDocker
+alias lzd='docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.lazydocker/:/.config/jesseduffield/lazydocker lazyteam/lazydocker'
+
+#Creates virtual python environment if not exists and activate
+alias venv='python3 -m venv $HOME/.venv && source $HOME/.venv/bin/activate'
+
+#List all current installed flatpaks
+alias flatpaks='flatpak list --columns=application --app'
+
+#Cheatsheet 
+alias cheatsheet='tldr --list | fzf --preview "tldr {1} --color=always" --preview-window=right,70% | xargs tldr'
+
+#Searches for file duplicates
+alias finddouble="fdupes -r ."
+
+alias pdfinfo="exiftool -a -G1"
+
+alias off="sudo shutdown now"
+
+#Restart xfce4 desktop (if lightdm)
+alias restartdesktop="sudo systemctl restart lightdm"
+
+#list all aliases from .aliases
+alias aliases="cat $HOME/.aliases"
+
+#Decode base64
+alias base64decode='echo "$1" | base64 --decode'
+
+#Install ripgrep for that--no-ignore --hidden
+alias findstr="rg $1 --no-ignore --hidden --smart-case"
+alias findstr2="rga --no-ignore --hidden -i $1" #Add rga & rga-preproc to /usr/local/bin
+alias findfile="find | grep  $1"
+alias feh="feh -Zr.d --draw-tinted --action1 \"exiftool %F\" --draw-actions --sort mtime"
+alias lg="looking-glass-client -F"
+alias togglenvidia="$HOME/.scripts/toggle_nvidia.sh"
+alias blender="$HOME/.scripts/blender_selector.sh"
+alias rec="$HOME/.scripts/peek_gyazo_upload.sh"
+alias kderestart="killall plasmashell && plasmashell > /dev/null 2>&1 & disown"
